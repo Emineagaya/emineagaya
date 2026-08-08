@@ -14,6 +14,52 @@
     <link rel="icon" type="image/png" sizes="16x16" href="image/favicon_logoai (1)/favicon-16x16.png">
     <link rel="icon" type="image/x-icon" href="image/favicon_logoai (1)/favicon.ico">
     <link rel="manifest" href="image/favicon_logoai (1)/site.webmanifest">
+  
+<style id="mobile-gallery-fix">
+@media (max-width: 900px) {
+  .gallery-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .gallery-track {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 0 14% !important;
+    margin: 0 !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .gallery-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gallery-track .gallery-item {
+    flex: 0 0 72% !important;
+    width: 72% !important;
+    min-width: 72% !important;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  .gallery-track .gallery-item img {
+    width: 100%;
+    display: block;
+  }
+
+  .gallery-arrow {
+    z-index: 5;
+  }
+}
+</style>
+
   </head>
   <body>
     <header class="site-header">
@@ -381,7 +427,31 @@
       const galleryTrack = document.getElementById("galleryTrack");
       const galleryPrev = document.getElementById("galleryPrev");
       const galleryNext = document.getElementById("galleryNext");
-      const galleryItems = Array.from(document.querySelectorAll(".gallery-item"));
+      
+      let galleryItems = Array.from(document.querySelectorAll(".gallery-item"));
+
+      if (galleryTrack && galleryItems.length > 1) {
+        const firstGalleryItem = galleryItems[0];
+        const lastGalleryItem = galleryItems[galleryItems.length - 1];
+
+        const firstClone = firstGalleryItem.cloneNode(true);
+        const lastClone = lastGalleryItem.cloneNode(true);
+
+        firstClone.classList.add("gallery-clone");
+        lastClone.classList.add("gallery-clone");
+
+        firstClone.setAttribute("aria-hidden", "true");
+        lastClone.setAttribute("aria-hidden", "true");
+        firstClone.tabIndex = -1;
+        lastClone.tabIndex = -1;
+
+        galleryTrack.insertBefore(lastClone, firstGalleryItem);
+        galleryTrack.appendChild(firstClone);
+
+        galleryItems = Array.from(
+          galleryTrack.querySelectorAll(".gallery-item:not(.gallery-clone)")
+        );
+      }
       const galleryLightbox = document.getElementById("galleryLightbox");
       const lightboxImage = document.getElementById("lightboxImage");
       const lightboxCaption = document.getElementById("lightboxCaption");
@@ -392,6 +462,28 @@
       const lightboxNext = document.getElementById("lightboxNext");
       let currentGalleryIndex = 0;
       let lastFocusedElement = null;
+
+      function centerFirstGalleryItemOnMobile() {
+        if (!galleryTrack || galleryItems.length === 0) return;
+        if (window.innerWidth > 900) return;
+
+        const firstItem = galleryItems[0];
+        const previousClone = galleryTrack.querySelector(".gallery-clone");
+
+        if (!firstItem || !previousClone) return;
+
+        requestAnimationFrame(() => {
+          const gap = parseFloat(
+            window.getComputedStyle(galleryTrack).columnGap
+          ) || 0;
+
+          galleryTrack.scrollLeft =
+            previousClone.offsetWidth + gap;
+        });
+      }
+
+      window.addEventListener("load", centerFirstGalleryItemOnMobile);
+      window.addEventListener("resize", centerFirstGalleryItemOnMobile);
       function getGalleryScrollAmount() {
       if (!galleryTrack || galleryItems.length === 0) {
       return 300;
@@ -545,3 +637,4 @@
     </script>
   </body>
 </html>
+
