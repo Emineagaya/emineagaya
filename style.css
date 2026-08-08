@@ -504,7 +504,11 @@ img {
   }
 
   .hero-photo {
-    display: none;
+    display: block;
+    width: 100%;
+    height: 320px;
+    margin-bottom: 28px;
+    border-radius: 90px 90px 28px 28px;
   }
 
   .hero-content {
@@ -1860,14 +1864,16 @@ img {
     }
 
     .gallery-track {
-        gap: 8px;
-        padding-bottom: 12px;
+        gap: 12px;
+        padding: 8px calc((100% - 78%) / 2) 12px;
+        scroll-snap-type: x mandatory;
     }
 
     .gallery-item {
-        flex: 0 0 calc((100% - 8px) / 2);
+        flex: 0 0 78%;
         aspect-ratio: 4 / 5;
         border-radius: 14px;
+        scroll-snap-align: center;
     }
 
     .gallery-label {
@@ -1954,8 +1960,13 @@ img {
         padding-left: 14px;
     }
 
+    .gallery-track {
+        padding-right: 11%;
+        padding-left: 11%;
+    }
+
     .gallery-item {
-        flex: 0 0 calc((100% - 7px) / 2);
+        flex-basis: 78%;
     }
 
     .lightbox-arrow {
