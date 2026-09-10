@@ -1011,3 +1011,6 @@
     min-height: auto;
   }
 }
+.education-card + .education-card {
+  margin-top: 18px;
+}
